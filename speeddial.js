@@ -42,19 +42,14 @@ var background = {
 	defaultClass:  "background",
 	fadeableClass: "fadeable",
 	change: function (imgSrc) {
-		if (this.back.style.backgroundImage) {
-			this.front.style.backgroundImage = this.back.style.backgroundImage;
-		} else {
-			this.front.style.backgroundImage = "url(img/white.gif)";
-		}
+		this.front.style.backgroundImage = this.back.style.backgroundImage || "url(img/white.gif)";
 		this.removeFadeable();
 		this.front.style.opacity = 1;
-		var me = this;
 		window.setTimeout(function () {
-			me.back.style.backgroundImage = "url(" + imgSrc + ')';
-			me.addFadeable();
-			me.front.style.opacity = 0;
-		}, Constants.TIME_1S);
+			this.back.style.backgroundImage = "url(" + imgSrc + ')';
+			this.addFadeable();
+			this.front.style.opacity = 0;
+		}.bind(this), Constants.TIME_1S);
 	},
 	removeFadeable: function () {
 		this.front.className = this.defaultClass;
