@@ -3,24 +3,19 @@ var Constants = {
 	CDATA_END:   "]]",
 	STATE_DONE:   4,
 	STATUS_OK:    200,
-	INTERVAL_12H: 1000 * 60 * 60 * 12
+	TIME_1S:      1000,
+	TIME_3H:      1000 * 60 * 60 * 3
 };
 
 function fetchFeed() {
-	loading.show();
 	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function () {
-		if (this.readyState == Constants.STATE_DONE && this.status == Constants.STATUS_OK) {
+	xhr.onload = function () {
+		if (this.readyState === Constants.STATE_DONE && this.status === Constants.STATUS_OK) {
 			parseFeed(xhr.responseText);
-			loading.hide();
 		}
 	};
 	xhr.open("GET", "https://interfacelift.com/wallpaper/rss/index.xml");
-	try {
-		xhr.send(null);
-	} catch (err) {
-		console.log("Opera Extension - InterfaceLIFT Wallpapers > Failed contacting server: " + err.message);
-	}
+	xhr.send(null);
 }
 
 function parseFeed(response) {
@@ -38,16 +33,34 @@ function parseFeed(response) {
 		title: sdTitle,
 		url:   sdUrl
 	});
-	document.body.style.backgroundImage = "url(" + temp.getElementsByTagName("img")[0].src + ')';
+	background.change(temp.getElementsByTagName("img")[0].src);
 }
 
-var loading = {
-	element: document.getElementById("loading"),
-	show: function () {
-		this.element.style.display = "block";
+var background = {
+	back:  document.getElementById("backBackground"),
+	front: document.getElementById("frontBackground"),
+	defaultClass:  "background",
+	fadeableClass: "fadeable",
+	change: function (imgSrc) {
+		if (this.back.style.backgroundImage) {
+			this.front.style.backgroundImage = this.back.style.backgroundImage;
+		} else {
+			this.front.style.backgroundImage = "url(img/white.gif)";
+		}
+		this.removeFadeable();
+		this.front.style.opacity = 1;
+		var me = this;
+		window.setTimeout(function () {
+			me.back.style.backgroundImage = "url(" + imgSrc + ')';
+			me.addFadeable();
+			me.front.style.opacity = 0;
+		}, Constants.TIME_1S);
 	},
-	hide: function () {
-		this.element.style.display = "none";
+	removeFadeable: function () {
+		this.front.className = this.defaultClass;
+	},
+	addFadeable: function () {
+		this.front.className = this.defaultClass + " " + this.fadeableClass;
 	}
 };
 
@@ -60,7 +73,7 @@ function getContentOfCDATA(cdata) {
 
 window.addEventListener("load", function () {
 	fetchFeed();
-	window.setInterval(function() {
+	window.setInterval(function () {
 	  fetchFeed();
-	}, Constants.INTERVAL_12H);
+	}, Constants.TIME_3H);
 }, false);
