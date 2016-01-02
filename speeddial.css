@@ -4,9 +4,9 @@ body {
 }
 
 .background {
-	position:        absolute;
-	width:           100%;
-	height:          100%;
+	position: absolute;
+	width:    100%;
+	height:   100%;
 	background-size: cover;
 }
 
@@ -15,8 +15,5 @@ body {
 }
 
 .fadeable {
-	-webkit-transition: opacity 1s ease-in-out;
-	   -moz-transition: opacity 1s ease-in-out;
-	     -o-transition: opacity 1s ease-in-out;
-	        transition: opacity 1s ease-in-out;
+	transition: opacity 1s ease-in-out;
 }
