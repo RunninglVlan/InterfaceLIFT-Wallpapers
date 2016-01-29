@@ -1,17 +1,41 @@
 var Constants = {
-	CDATA_START: "[CDATA[",
-	CDATA_END:   "]]",
-	STATE_DONE:   4,
-	STATUS_OK:    200,
-	TIME_1S:      1000,
-	TIME_3H:      1000 * 60 * 60 * 3
+	STATE_DONE: 4,
+	STATUS_OK:  200,
+	TIME_1S:    1000,
+	TIME_5S:    1000 * 5,
+	TIME_3H:    1000 * 60 * 60 * 3
 };
+
+var ext = {
+	lastUpdate: Date.now(),
+	background: new Background(),
+	utils: new Utils(),
+	updateIfNeeded: function (url) {
+		if (typeof(url) !== "undefined" && ~url.indexOf("browser://startpage/")) {
+			var msSinceLastUpdate = Date.now() - this.lastUpdate;
+			if (msSinceLastUpdate > Constants.TIME_3H) {
+				fetchFeed();
+			}
+		}
+	}
+};
+
+chrome.tabs.onActivated.addListener(function (activeInfo) {
+	chrome.tabs.get(activeInfo.tabId, function (tab) {
+		ext.updateIfNeeded(tab.url);
+	});
+});
+chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+	ext.updateIfNeeded(changeInfo.url);
+});
 
 function fetchFeed() {
 	var xhr = new XMLHttpRequest();
+	xhr.timeout = Constants.TIME_5S;
+	xhr.responseType = "document";
 	xhr.onload = function () {
 		if (this.readyState === Constants.STATE_DONE && this.status === Constants.STATUS_OK) {
-			parseFeed(xhr.responseText);
+			parseFeed(xhr.response);
 		}
 	};
 	xhr.open("GET", "https://interfacelift.com/wallpaper/rss/index.xml");
@@ -19,56 +43,59 @@ function fetchFeed() {
 }
 
 function parseFeed(response) {
-	if (response.length == 0) {
-		return;
-	}
-
-	var temp = document.createElement("div");
-	temp.innerHTML = response;
-	var feedItem = temp.getElementsByTagName("item")[0];
-	temp.innerHTML = getContentOfCDATA(feedItem.getElementsByTagName("description")[0].innerHTML);
-	var sdUrl = temp.getElementsByTagName('a')[0].href;
-	var sdTitle = getContentOfCDATA(feedItem.getElementsByTagName("title")[0].innerHTML);
+	var feedItem = response.querySelector("item");
+	var description = ext.utils.createElement(
+		ext.utils.getContentOfCDATA(feedItem.querySelector("description").innerHTML)
+	);
+	var sdUrl = description.querySelector('a').href;
+	var sdTitle = ext.utils.getContentOfCDATA(feedItem.querySelector("title").innerHTML);
 	opr.speeddial.update({
 		title: sdTitle,
 		url:   sdUrl
 	});
-	background.change(temp.getElementsByTagName("img")[0].src);
+	ext.background.change(description.querySelector("img").src);
+	ext.lastUpdate = Date.now();
 }
 
-var background = {
-	back:  document.getElementById("backBackground"),
-	front: document.getElementById("frontBackground"),
-	defaultClass:  "background",
-	fadeableClass: "fadeable",
-	change: function (imgSrc) {
-		this.front.style.backgroundImage = this.back.style.backgroundImage || "url(img/white.gif)";
-		this.removeFadeable();
-		this.front.style.opacity = 1;
+function Background() {
+	var DEFAULT_CLASS  = "background";
+	var FADEABLE_CLASS = "fadeable";
+	var back  = document.querySelector("#backBackground");
+	var front = document.querySelector("#frontBackground");
+
+	this.change = function (imgSrc) {
+		front.style.backgroundImage = back.style.backgroundImage || "url(img/white.gif)";
+		removeFadeable();
+		front.style.opacity = 1;
 		window.setTimeout(function () {
-			this.back.style.backgroundImage = "url(" + imgSrc + ')';
-			this.addFadeable();
-			this.front.style.opacity = 0;
-		}.bind(this), Constants.TIME_1S);
-	},
-	removeFadeable: function () {
-		this.front.className = this.defaultClass;
-	},
-	addFadeable: function () {
-		this.front.className = this.defaultClass + " " + this.fadeableClass;
-	}
-};
-
-function getContentOfCDATA(cdata) {
-	return cdata.slice(
-		cdata.indexOf(Constants.CDATA_START) + Constants.CDATA_START.length,
-		cdata.indexOf(Constants.CDATA_END)
-	);
+			back.style.backgroundImage = "url(" + imgSrc + ')';
+			addFadeable();
+			front.style.opacity = 0;
+		}, Constants.TIME_1S);
+	};
+	var removeFadeable = function () {
+		front.className = DEFAULT_CLASS;
+	};
+	var addFadeable = function () {
+		front.className = DEFAULT_CLASS + " " + FADEABLE_CLASS;
+	};
 }
 
-window.addEventListener("load", function () {
-	fetchFeed();
-	window.setInterval(function () {
-	  fetchFeed();
-	}, Constants.TIME_3H);
-}, false);
+function Utils() {
+	var CDATA_START = "[CDATA[";
+	var CDATA_END   = "]]";
+
+	this.getContentOfCDATA = function (cdata) {
+		return cdata.slice(
+			cdata.indexOf(CDATA_START) + CDATA_START.length,
+			cdata.indexOf(CDATA_END)
+		);
+	};
+	this.createElement = function (content) {
+		var element = document.createElement("div");
+		element.innerHTML = content;
+		return element;
+	};
+}
+
+window.addEventListener("load", fetchFeed, false);

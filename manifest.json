@@ -1,6 +1,6 @@
 {
 	"name":            "InterfaceLIFT Wallpapers",
-	"version":         "1.1",
+	"version":         "1.2",
 	"manifest_version": 2,
 
 	"description": "Shows latest InterfaceLIFT wallpaper on your speed dial.",
@@ -13,9 +13,8 @@
 		"128": "img/icon_128.png"
 	},
 
-	"permissions": ["*://interfacelift.com/*", "speeddial"],
+	"permissions": ["*://interfacelift.com/*", "speeddial", "tabs"],
 	"speeddial": {
-		"title": "Loading...",
 		"url":   "https://interfacelift.com/"
 	},
 	"background": {
