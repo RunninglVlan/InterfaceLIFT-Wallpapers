@@ -69,8 +69,10 @@ function Background() {
 		front.style.opacity = 1;
 		window.setTimeout(function () {
 			back.style.backgroundImage = "url(" + imgSrc + ')';
-			addFadeable();
-			front.style.opacity = 0;
+			window.setTimeout(function () {
+				addFadeable();
+				front.style.opacity = 0;
+			}, Constants.TIME_1S);
 		}, Constants.TIME_1S);
 	};
 	var removeFadeable = function () {
