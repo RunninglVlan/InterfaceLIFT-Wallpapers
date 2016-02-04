@@ -3,7 +3,8 @@ var Constants = {
 	STATUS_OK:  200,
 	TIME_1S:    1000,
 	TIME_5S:    1000 * 5,
-	TIME_3H:    1000 * 60 * 60 * 3
+	TIME_3H:    1000 * 60 * 60 * 3,
+	SPEED_DIAL: "://startpage/"
 };
 
 var ext = {
@@ -11,7 +12,7 @@ var ext = {
 	background: new Background(),
 	utils: new Utils(),
 	updateIfNeeded: function (url) {
-		if (typeof(url) !== "undefined" && ~url.indexOf("browser://startpage/")) {
+		if (typeof(url) !== "undefined" && ~url.indexOf(Constants.SPEED_DIAL)) {
 			var msSinceLastUpdate = Date.now() - this.lastUpdate;
 			if (msSinceLastUpdate > Constants.TIME_3H) {
 				fetchFeed();
