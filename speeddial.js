@@ -14,7 +14,7 @@ var ext = {
 	updateIfNeeded: function (url) {
 		if (typeof(url) !== "undefined" && ~url.indexOf(Constants.SPEED_DIAL)) {
 			var msSinceLastUpdate = Date.now() - this.lastUpdate;
-			if (msSinceLastUpdate > Constants.TIME_3H) {
+			if (ext.background.isEmpty() || msSinceLastUpdate > Constants.TIME_3H) {
 				fetchFeed();
 			}
 		}
@@ -76,6 +76,9 @@ function Background() {
 			}, Constants.TIME_1S);
 		}, Constants.TIME_1S);
 	};
+	this.isEmpty = function () {
+		return !(back.style.backgroundImage || front.style.backgroundImage);
+	};
 	var removeFadeable = function () {
 		front.className = DEFAULT_CLASS;
 	};
@@ -100,5 +103,3 @@ function Utils() {
 		return element;
 	};
 }
-
-window.addEventListener("load", fetchFeed, false);
