@@ -6,25 +6,23 @@ function Background() {
 	var back  = document.querySelector("#backBackground");
 	var front = document.querySelector("#frontBackground");
 
-	this.change = function (imgSrc) {
+	this.change = imgSrc => {
 		front.style.backgroundImage = back.style.backgroundImage || "url(img/white.gif)";
 		removeFadeable();
 		front.style.opacity = 1;
-		window.setTimeout(function () {
+		window.setTimeout(() => {
 			back.style.backgroundImage = "url(" + imgSrc + ')';
-			window.setTimeout(function () {
+			window.setTimeout(() => {
 				addFadeable();
 				front.style.opacity = 0;
 			}, Utils.TIME_1S);
 		}, Utils.TIME_1S);
 	};
-	this.isEmpty = function () {
-		return !(back.style.backgroundImage || front.style.backgroundImage);
-	};
-	var removeFadeable = function () {
+	this.isEmpty = () => !(back.style.backgroundImage || front.style.backgroundImage);
+	var removeFadeable = () => {
 		front.className = DEFAULT_CLASS;
 	};
-	var addFadeable = function () {
+	var addFadeable = () => {
 		front.className = DEFAULT_CLASS + " " + FADEABLE_CLASS;
 	};
 }

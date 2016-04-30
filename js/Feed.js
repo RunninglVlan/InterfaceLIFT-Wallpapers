@@ -1,26 +1,24 @@
 // import Utils.js
 
 function Feed(extension) {
-	this.fetch = function () {
-		var xhr = new XMLHttpRequest();
-		xhr.timeout = Utils.TIME_1S * 5;
-		xhr.responseType = "document";
-		xhr.onload = function () {
-			if (this.readyState === Utils.STATE_DONE && this.status === Utils.STATUS_OK) {
-				parse(xhr.response);
-			}
-		};
-		xhr.open("GET", "https://interfacelift.com/wallpaper/rss/index.xml");
-		xhr.send(null);
+	this.fetch = () => {
+		window.fetch("https://interfacelift.com/wallpaper/rss/index.xml")
+			.then(response => response.text())
+			.then(responseText => {
+				var responseDocument = Utils.createDiv(responseText);
+				parse(responseDocument);
+			});
 	};
 
-	var parse = function (response) {
+	var parse = response => {
 		var feedItem = response.querySelector("item");
 		var description = Utils.createDiv(
 			Utils.getContentOfCDATA(feedItem.querySelector("description").innerHTML)
 		);
+		var title = Utils.getContentOfCDATA(feedItem.querySelector("title").innerHTML);
+		var author = Utils.parseAuthor(feedItem.querySelector("author").innerHTML);
+		var sdTitle = title + " by " + author;
 		var sdUrl = description.querySelector('a').href;
-		var sdTitle = Utils.getContentOfCDATA(feedItem.querySelector("title").innerHTML);
 		opr.speeddial.update({
 			title: sdTitle,
 			url:   sdUrl
