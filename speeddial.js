@@ -12,7 +12,14 @@ var ext = {
 		}
 	}
 };
-ext.feed = new Feed(ext);
+ext.feed = new Feed((sdTitle, sdUrl, backgroundSrc) => {
+	opr.speeddial.update({
+		title: sdTitle,
+		url:   sdUrl
+	});
+	ext.background.change(backgroundSrc);
+	ext.lastUpdate = Date.now();
+});
 
 chrome.tabs.onActivated.addListener(activeInfo => {
 	chrome.tabs.get(activeInfo.tabId, tab => {
