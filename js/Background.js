@@ -1,6 +1,5 @@
-// import Utils.js
-
 function Background() {
+	var CHANGE_TIME_MS = 1000;
 	var DEFAULT_CLASS  = "background";
 	var FADEABLE_CLASS = "fadeable";
 	var back  = document.querySelector("#backBackground");
@@ -15,8 +14,8 @@ function Background() {
 			window.setTimeout(() => {
 				addFadeable();
 				front.style.opacity = 0;
-			}, Utils.TIME_1S);
-		}, Utils.TIME_1S);
+			}, CHANGE_TIME_MS);
+		}, CHANGE_TIME_MS);
 	};
 	this.isEmpty = () => !(back.style.backgroundImage || front.style.backgroundImage);
 	var removeFadeable = () => {

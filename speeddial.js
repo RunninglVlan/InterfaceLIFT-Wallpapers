@@ -1,12 +1,14 @@
-// import Utils.js, Background.js, Feed.js
+// import Background.js, Feed.js
 
 var ext = {
+	SPEED_DIAL: "://startpage/",
+	UPDATE_TIME_MS: 1000 * 60 * 60 * 3,
 	lastUpdate: Date.now(),
 	background: new Background(),
 	updateIfNeeded: url => {
-		if (typeof(url) !== "undefined" && ~url.indexOf(Utils.SPEED_DIAL)) {
+		if (typeof(url) !== "undefined" && ~url.indexOf(ext.SPEED_DIAL)) {
 			var msSinceLastUpdate = Date.now() - ext.lastUpdate;
-			if (ext.background.isEmpty() || msSinceLastUpdate > Utils.TIME_1H * 3) {
+			if (ext.background.isEmpty() || msSinceLastUpdate > ext.UPDATE_TIME_MS) {
 				ext.feed.fetch();
 			}
 		}

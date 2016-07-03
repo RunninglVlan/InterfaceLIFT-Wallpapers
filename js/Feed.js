@@ -5,14 +5,14 @@ function Feed(callback) {
 		window.fetch("https://interfacelift.com/wallpaper/rss/index.xml")
 			.then(response => response.text())
 			.then(responseText => {
-				var responseDocument = Utils.createDiv(responseText);
+				var responseDocument = Utils.parseHTML(responseText);
 				parse(responseDocument);
 			});
 	};
 
 	var parse = response => {
 		var feedItem = response.querySelector("item");
-		var description = Utils.createDiv(
+		var description = Utils.parseHTML(
 			Utils.getContentOfCDATA(feedItem.querySelector("description").innerHTML)
 		);
 		var backgroundSrc = description.querySelector("img").src;
