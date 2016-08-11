@@ -31,3 +31,6 @@ chrome.tabs.onActivated.addListener(activeInfo => {
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 	ext.updateIfNeeded(changeInfo.url);
 });
+window.addEventListener("load", () => {
+	ext.feed.fetch();
+});
