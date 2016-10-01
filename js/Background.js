@@ -1,16 +1,16 @@
 function Background() {
-	var CHANGE_TIME_MS = 1000;
-	var DEFAULT_CLASS  = "background";
-	var FADEABLE_CLASS = "fadeable";
-	var back  = document.querySelector("#backBackground");
-	var front = document.querySelector("#frontBackground");
+	const CHANGE_TIME_MS = 1000;
+	const DEFAULT_CLASS  = "background", FADEABLE_CLASS = "fadeable";
+
+	const back  = document.querySelector("#backBackground");
+	const front = document.querySelector("#frontBackground");
 
 	this.change = imgSrc => {
 		front.style.backgroundImage = back.style.backgroundImage || "url(img/white.gif)";
 		removeFadeable();
 		front.style.opacity = 1;
 		window.setTimeout(() => {
-			back.style.backgroundImage = "url(" + imgSrc + ')';
+			back.style.backgroundImage = `url(${imgSrc})`;
 			window.setTimeout(() => {
 				addFadeable();
 				front.style.opacity = 0;
@@ -18,10 +18,10 @@ function Background() {
 		}, CHANGE_TIME_MS);
 	};
 	this.isEmpty = () => !(back.style.backgroundImage || front.style.backgroundImage);
-	var removeFadeable = () => {
+	const removeFadeable = () => {
 		front.className = DEFAULT_CLASS;
 	};
-	var addFadeable = () => {
-		front.className = DEFAULT_CLASS + " " + FADEABLE_CLASS;
+	const addFadeable = () => {
+		front.className = `${DEFAULT_CLASS} ${FADEABLE_CLASS}`;
 	};
 }
