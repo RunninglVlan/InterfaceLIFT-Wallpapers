@@ -1,14 +1,26 @@
 // import Utils.js
 
-function Feed(callback) {
-	this.fetch = () => {
-		window.fetch("https://interfacelift.com/wallpaper/rss/index.xml")
-			.then(response => response.text())
-			.then(responseText => {
-				const responseDocument = Utils.parseHTML(responseText);
-				parse(responseDocument);
-			});
-	};
+const Feed = (() => {
+	let instance, callback;
+
+	class Feed {
+		constructor(c) {
+			if (!instance) {
+				instance = this;
+				callback = c;
+			}
+			return instance;
+		}
+
+		fetch() {
+			window.fetch("https://interfacelift.com/wallpaper/rss/index.xml")
+				.then(response => response.text())
+				.then(responseText => {
+					const responseDocument = Utils.parseHTML(responseText);
+					parse(responseDocument);
+				});
+		}
+	}
 
 	const parse = response => {
 		const feedItem = response.querySelector("item");
@@ -28,4 +40,6 @@ function Feed(callback) {
 			callback(sdTitle, sdUrl, backgroundSrc);
 		});
 	};
-}
+
+	return Feed;
+})();
